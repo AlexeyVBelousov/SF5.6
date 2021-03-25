@@ -6,64 +6,125 @@ namespace SF5._6
     {
         static void Main(string[] args)
         {
-           
+            PrintData(InputData());
         }
 
         static (string firtsname, string lastname, int age, bool haveapet, int petscount, string[] petsnames, int favcolorscount, string[] favcolors) InputData ()
         {
+            (string firtsname, string lastname, int age, bool haveapet, int petscount, string[] petsnames, int favcolorscount, string[] favcolors) user;
+
             Console.WriteLine("Введите имя!");
-            string firstname = Console.ReadLine();
+            user.firtsname = Console.ReadLine();
 
             Console.WriteLine("Введите фамилию!");
-            string lastname = Console.ReadLine();
+            user.lastname = Console.ReadLine();
 
-            Console.WriteLine("Введите возраст!");
-            string inage = Console.ReadLine();
+            bool badsign = true;
 
-            int age;
-            if (int.TryParse(inage, out age))
+            do
             {
-                age = int.Parse(inage);
-            }
+                Console.WriteLine("Введите возраст!");
+                user.age = CheckValue(Console.ReadLine());
+                badsign = (user.age == 0);
+            } while (badsign);
+
 
             Console.WriteLine("Есть питомец/питомцы? (Да/Нет)");
-            bool haveapet = (Console.ReadLine() == "Да");
+            user.haveapet = (Console.ReadLine() == "Да");
 
-            if (haveapet)
+            user.petscount = 0;
+            user.petsnames = new string[] { "" };
+
+            if (user.haveapet)
             {
-                Console.WriteLine("Сколько зверей?");
-                var inpetscount = Console.ReadLine();
-
-                int petscount;
-                if (int.TryParse(inpetscount, out petscount))
+                do
                 {
-                    petscount = int.Parse(inpetscount);
-                    if (petscount <= 0)
-                    {
-                        petscount = 0;
-                        haveapet = false;
-                    }
-                }
+                    Console.WriteLine("Сколько зверей?");
+                    user.petscount = CheckValue(Console.ReadLine());
+                    badsign = (user.petscount == 0);
+                } while (badsign);
 
-                if (petscount > 0)
-                {
-                    GetPetsNames(petscount);
-                }
-
-
+                user.petsnames = GetPetsNames(user.petscount);
             }
+
+
+            Console.WriteLine("Сколько любимых цветов?");
+            user.favcolorscount = CheckValue(Console.ReadLine());
+
+            if (user.favcolorscount == 0) // Никто не обещал, что будут вообще любимые цвета, и 0 тут - вариант корректного ответа.
+            {
+                user.favcolors = new string[] {""};
+            }
+            else
+            {
+                user.favcolors = GetFavColorsNames(user.favcolorscount);
+            }
+
+            return (user.firtsname, user.lastname, user.age, user.haveapet, user.petscount, user.petsnames, user.favcolorscount, user.favcolors);
         }
 
         static string[] GetPetsNames(int count)
         {
-            string[] petsnames = new string[count-1];
-            for (int i = 0; i < (count - 1); i++)
+            string[] petsnames = new string[count];
+            for (int i = 0; i < count; i++)
             {
                 Console.WriteLine("Введите имя зверя номер {0}:", i + 1);
                 petsnames[i] = Console.ReadLine();
             }
+            return petsnames;
+        }
 
-            return petsnames[];
+        static string[] GetFavColorsNames(int count)
+        {
+            string[] favcolorsnames = new string[count];
+            for (int i = 0; i < count; i++)
+            {
+                Console.WriteLine("Введите любимый цвет номер {0}:", i + 1);
+                favcolorsnames[i] = Console.ReadLine();
+            }
+
+            return favcolorsnames;
+        }
+
+        static int CheckValue(string invalue)
+        {
+            int value;
+            if (int.TryParse(invalue, out value))
+            {
+                value = int.Parse(invalue);
+                if (value < 0)
+                {
+                    value = 0;
+                }
+            }
+            return value;
+        }
+
+        static void PrintData((string firtsname, string lastname, int age, bool haveapet, int petscount, string[] petsnames, int favcolorscount, string[] favcolors) userdata)
+        {
+            Console.WriteLine("\n\nИмя: {0}", userdata.firtsname);
+            Console.WriteLine("Фамилия: {0}", userdata.lastname);
+            Console.WriteLine("Возраст: {0}", userdata.age);
+            if (userdata.haveapet)
+            {
+                Console.WriteLine("Есть питомец/питомцы:");
+                for (int i = 0; i < userdata.petscount; i++)
+                {
+                    Console.WriteLine("Зверь номер {0}: {1}", i + 1, userdata.petsnames[i]);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Нет питомца.");
+            }
+            Console.WriteLine("Любимых цветов: {0}", userdata.favcolorscount);
+            if (userdata.favcolorscount > 0)
+            {
+                for (int i = 0; i < userdata.favcolorscount; i++)
+                {
+                    Console.WriteLine("Цвет номер {0}: {1}", i + 1, userdata.favcolors[i]);
+                }
+            }
         }
     }
 }
